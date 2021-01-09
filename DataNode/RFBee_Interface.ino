@@ -7,6 +7,7 @@
 
 void RFBee::sendData(char* data, uint8_t len)
 {
+    //TODO(Nils): this is terrible stuff
     sendOwnData(data, len);
 }
 
@@ -15,33 +16,34 @@ void RFBee::getMessage(char* message)
   for(int i=0; i<63;i++)
   {
     message[i] = messageRecieved[i];
-  }
-  for(int i=0; i<63; i++)
-  {
     messageRecieved[i]=0;
   }
-
 }
 
 boolean RFBee::Update(void)
 {
   char dataIn[CCx_PACKT_LEN] = {0};
   rfSensorUpdate(dataIn);
-  if ((millis()-firstPackageRecieved) > 500) //First package of the message or the end of the message
+  //TODO(Nils): I feel like the implementation leaves much to be desired
+  //First package of the message or the end of the message
+  if ((millis()-firstPackageRecieved) > 500)
   {
-    if((messageRecieved[0]!=0) && (dataIn[0]==0))                          // We didn't recieve a package, so we consider thsi end of message and send it to the user
+    // We didn't recieve a package, so we consider this end of message and send it to the user
+    if((messageRecieved[0] != 0) && (dataIn[0] == 0))
     {
       recievedBits = 0;
       return true;
-    } 
-    else if (dataIn[0]!=0)                                     // This is the first package of the message, so we write that down
+    }
+    // This is the first package of the message, so we write that down
+    else if (dataIn[0] != 0)
     {
       firstPackageRecieved = millis();
     }
   }
-  if(dataIn[0]!=0)                            //We recieved a message
+  //We recieved a message
+  if(dataIn[0] != 0)
   {
-    int i=0;
+    int i = 0;
     while(dataIn[i])
     {
       messageRecieved[recievedBits + i] = dataIn[i];
@@ -56,13 +58,12 @@ void RFBee::Startup(void)
 {
   pinMode(9,OUTPUT);
   if (Config.initialized() != OK) {
-  //  Serial.println("Initializing config"); 
     Config.reset();
   }
   Config.load_default();
   //do extra initalization
   myAddress = logAddress;
-  Config.set(CONFIG_MY_ADDR,myAddress);//modify the numberf to specify an unique address for RFBee itself 
+  Config.set(CONFIG_MY_ADDR,myAddress);//modify the numberf to specify an unique address for RFBee itself
   setMyAddress();
   Config.set(CONFIG_ADDR_CHECK,2);//2:set RFBee with address checking and broadcast
   setAddressCheck();
@@ -75,15 +76,15 @@ void RFBee::Startup(void)
 void RFBee::rfSensorUpdate(char* dataOutput) //main loop
 {
     byte mode = Config.get(CONFIG_RFBEE_MODE);
-  if (Serial.available() > 0) 
+  if (Serial.available() > 0)
   {
     sleepCounter=1000; // reset the sleep counter
-    if (serialMode == SERIALCMDMODE) 
+    if (serialMode == SERIALCMDMODE)
     {
-      readSerialCmd(); 
+      readSerialCmd();
       return;
     }
-    else  
+    else
     {
       txDataFromSerialToRf();
     }

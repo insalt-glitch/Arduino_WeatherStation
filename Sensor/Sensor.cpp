@@ -49,18 +49,18 @@ bool TH_Sensor::get_temp_humid(float* temp_humdity_vals)
 boolean TH_Sensor::readingProcess(void)
 {
     boolean laststate = HIGH;  // We use this to detect the bitstates
-    uint8_t counter = 0;       //counts time while readin the bits
-    uint8_t i = 0;             //indcies
-    uint8_t j = 0;             //indcies
-    
+    uint8_t counter = 0;       //counts time while reading the bits
+    uint8_t i = 0;             //index
+    uint8_t j = 0;             //index
+
 
     digitalWrite(DATA_PIN, HIGH);
     delay(250);
-    
+
     //get the current time to check wether we can read the sensor
-    long int unsigned current_reading = millis(); 
+    long int unsigned current_reading = millis();
     // SystemTime will wrap every ~50 days
-    if(current_reading < _last_reading) 
+    if(current_reading < _last_reading)
     {
         _last_reading = 0;
     }
@@ -71,30 +71,30 @@ boolean TH_Sensor::readingProcess(void)
     }
     //new last reading_time
     _last_reading = millis();
-    
-    //start reading process 
+
+    //start reading process
     _data[0] = _data[1] = _data[2] = _data[3] = _data[4] = 0; //delete data
-    
+
     //startup sequence: http://wiki.seeedstudio.com/Grove-TemperatureAndHumidity_Sensor/ (IMG)
-    
+
     pinMode(DATA_PIN, OUTPUT);
     digitalWrite(DATA_PIN, LOW);
     delay(20);
     cli(); //blocks all system interrupts ?
     digitalWrite(DATA_PIN, HIGH);
     delayMicroseconds(40);
-    
-    //start reading 
+
+    //start reading
     pinMode(DATA_PIN, INPUT);
     //loop for as many bits as we get from the Sensor
-    for (i = 0; i < MAXTIMINGS; i++) 
+    for (i = 0; i < MAXTIMINGS; i++)
     {
         counter = 0;
-        while (digitalRead(DATA_PIN) == laststate) 
+        while (digitalRead(DATA_PIN) == laststate)
         {
             counter++;
             delayMicroseconds(1);
-            if (counter == 255)  //vary this ? 
+            if (counter == 255)  //vary this ?
             {
                 break;
             }
@@ -104,17 +104,17 @@ boolean TH_Sensor::readingProcess(void)
             break;
         }
         // ignore first 3 transitions
-        if ((i >= 4) && (i % 2 == 0)) 
+        if ((i >= 4) && (i % 2 == 0))
         {
             // shove each bit into the storage bytes
             _data[j / 8] <<= 1;
-            if (counter > _count) 
+            if (counter > _count)
             {
                 _data[j / 8] |= 1;
             }
             j++;
         }
-        
+
     }
     sei(); // unblock system interrupts ?
     //checksum
@@ -159,5 +159,5 @@ uint8_t TH_Sensor::CPU_SPEED(void)
   //ERROR "CPU SPEED NOT SUPPORTED"
   {
     return 25;
-  } 
+  }
 }
