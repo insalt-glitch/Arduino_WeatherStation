@@ -25,7 +25,7 @@ struct TH_Sensor {
 
   // functions
   // reading out data from the sensor
-  boolean readingProcess(void);
+  boolean sensorReadout(void);
   // determines the counter based on the used CPU
   uint8_t CPU_SPEED(void);
 };
