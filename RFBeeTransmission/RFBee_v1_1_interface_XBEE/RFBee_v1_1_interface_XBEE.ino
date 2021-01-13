@@ -23,11 +23,11 @@ void loop()
     Serial.print("\n");
     //rfbee.sendData(dataToSend, sizeof(dataToSend)/sizeof(char));
   }
-  if((millis()-lastSend)>20000)
+  if((millis()-lastSend)>10000)
   {
     char c[] = "hello";
     rfbee.sendData(c, sizeof(c)/sizeof(char));
     lastSend=millis();
   }
-  
+
 }

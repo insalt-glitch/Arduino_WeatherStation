@@ -55,7 +55,6 @@ bool TH_Sensor::get_temp_humid(float* temp_humdity_vals) {
  * could potenially improve the success-rate of our reading process (should kind of depent on the CPU).
  */
 boolean TH_Sensor::sensorReadout(void) {
-    boolean success = false;       // Flag for validity of the data
     boolean laststate = HIGH;  // We use this to detect the bitstates
     uint8_t counter = 0;       // counts time while reading the bits
     uint8_t i = 0;             // index
@@ -83,14 +82,13 @@ boolean TH_Sensor::sensorReadout(void) {
     // delete data
     _data[0] = _data[1] = _data[2] = _data[3] = _data[4] = 0;
 
-    // blocks all system interrupts during sensor reading
-    cli();
-
     // startup sequence:
     // http://wiki.seeedstudio.com/Grove-TemperatureAndHumidity_Sensor/ (IMG)
     pinMode(DATA_PIN, OUTPUT);
     digitalWrite(DATA_PIN, LOW);
     delay(20);
+    // blocks all system interrupts during sensor reading this has to be here
+    cli();
     digitalWrite(DATA_PIN, HIGH);
     delayMicroseconds(40);
 
@@ -124,11 +122,14 @@ boolean TH_Sensor::sensorReadout(void) {
     // allow system interrupts from here on out
     sei();
     // check that we read all 40 bits and that the checksum is correct
-    check_sum = (_data[0] + _data[1] + _data[2] + _data[3]) & 0xFF)
-    if ((j >= 40) && (_data[4] == check_sum) {
-        success = true;
+    int check_sum = (_data[0] + _data[1] + _data[2] + _data[3]) & 0xFF;
+    if ((j >= 40) && (_data[4] == check_sum)) {
+        Serial.print("Success");
+        return true;
     }
-    return success;
+
+    // in case of a check_sum fail we return false
+    return false;
 }
 
 uint8_t TH_Sensor::CPU_SPEED(void) {

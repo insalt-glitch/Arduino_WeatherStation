@@ -38,7 +38,7 @@ void loop() {
     if (th_sensor.get_temp_humid(temp_humid)) {
       // TODO(Nils): Check if we should init this to something
       // We send the data with a default width of data_width
-      data_width = 10
+      int data_width = 10;
       char temp[data_width];
       // TODO (Nils): We should probably just send the humidty and temperature.
       char string_1[] = "Temperature: ";

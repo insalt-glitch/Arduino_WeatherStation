@@ -118,7 +118,7 @@ void RFBee::rfBeeInit(void){
     serialMode=SERIALDATAMODE;
     sleepCounter=0;
     attachInterrupt(0, ISRVreceiveData, RISING);  //GD00 is located on pin 2, which results in INT 0
-    pinMode(GDO0,INPUT);// used for polling the RF received data
+    pinMode(GDO0, INPUT);// used for polling the RF received data
 }
 
 // handle interrupt
